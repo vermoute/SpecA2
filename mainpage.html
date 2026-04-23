@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.13/lib/addons/p5.sound.min.js"></script>
+    
+    
+    
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  </head>
+  <style>
+    .navigation-bar {
+  position: fixed; /* Đảm bảo thanh điều hướng luôn cố định */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2000; /* Phải cao hơn z-index của lớp .about (1000) */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 64px; /* Điều chỉnh tùy theo thiết kế của bạn */
+  pointer-events: none; /* Cho phép click xuyên qua thanh bar nhưng... */
+}
+
+/* Quan trọng: Cho phép click vào các thành phần con bên trong */
+.canvas-title, .button-menu {
+  pointer-events: auto; 
+}
+    .sound {
+  position: fixed;
+  left: 91%;
+  top: 85vh; 
+  z-index: 1.1;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100vw - (var(--desktop-gutter) * 2));
+  white-space: nowrap;
+  padding: clamp(8px, 0.74vw, 12px) clamp(12px, 1.05vw, 16px);
+  border: 1px solid #111;
+  background: rgb(250, 248, 245); 
+  color: #111;
+  text-decoration: none;
+  font-size: clamp(14px, 1.02vw, 17px);
+  font-weight: 500;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.sound::after {
+  content: 'Unmute';
+  transition: width 180ms ease, margin-left 180ms ease, opacity 180ms ease, transform 180ms ease, filter 140ms ease;
+}
+
+.sound.is-open::after {
+  content: "Mute";
+}
+
+.sound.is-open {
+  opacity: 1;
+  transform: translateX(0);
+  filter: invert(1);
+  transition: width 180ms ease, margin-left 180ms ease, opacity 180ms ease, transform 180ms ease, filter 140ms ease;
+
+}
+.about {
+  position: fixed;
+  top: -100%;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #F5F5F3;
+  transition: top 0.6s cubic-bezier(0.4,0,0.2,1);
+  z-index: 1000;
+}
+
+.about--open {
+  top: 0;
+}
+
+/* TOP TAGLINE */
+.about__topbar {
+  position: absolute;
+  top: 23px;
+  width: 100%;
+  text-align: center;
+}
+
+.about__subtitle {
+  font-family: "Space Grotesk";
+  font-size: 16px;
+  font-weight: 400;
+  color: #000;
+}
+
+
+.about__close {
+  position: absolute;
+  top: 24px;
+  right: 64px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+
+/* ABOUT TITLE */
+.about__heading {
+  position: absolute;
+  top: 226px;
+  left: 215px;
+
+  font-family: "Space Grotesk";
+  font-size: 64px;
+  font-weight: 700;
+  color: #000;
+}
+
+/* RIGHT COLUMN */
+.about__list {
+  position: absolute;
+  top: 226px;
+  right: 218px;
+  width: 838px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 64px; 
+}
+
+.accordion {
+  padding-bottom: 16px;
+}
+
+/* HEADER */
+.accordion__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline; 
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  padding-bottom: 0; 
+}
+
+/* LEFT */
+.accordion__left {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 23px; 
+}
+
+/* NUMBER */
+.accordion__num {
+  font-family: "Space Grotesk";
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+    position: relative;
+  top: -14px;
+}
+
+/* TITLE */
+.accordion__title {
+  font-family: "Space Grotesk";
+  font-size: 40px;
+  font-weight: 500;
+  color: #000;
+}
+
+/* ICON */
+.accordion__icon {
+  width: 28px;
+  height: 28px;
+  transform: rotate(-45deg);
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+.accordion--open .accordion__icon {
+  transform: rotate(0deg);
+}
+
+
+.accordion__divider {
+  height: 2px;
+  background: #000;
+  margin-top: 12px;
+}
+
+/* BODY  */
+.accordion__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.accordion--open .accordion__body {
+  grid-template-rows: 1fr;
+}
+
+.accordion__inner {
+  overflow: hidden;
+}
+
+/* CONTENT */
+.accordion__content {
+  margin-top: 21px; 
+
+  width: 830px;
+
+  font-family: "Questrial", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #1E1E1E;
+  line-height: 1.6;
+}
+
+
+.accordion__content p {
+  margin-bottom: 16px;
+}
+  /* ──────────────────────────────────────────────
+     MENU ICON — inline SVG, morphs to X
+  ────────────────────────────────────────────── */
+  .menu-btn {
+    position: absolute;
+    left: 1809px;
+    top: 14px;
+    width: 43px;
+    height: 40px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+  }
+
+  .menu-btn__svg {
+    width: 43px;
+    height: 24px;
+    overflow: visible;
+  }
+
+  .menu-btn__bar {
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: 21.5px 12px; /* center of 43×24 viewBox */
+  }
+
+  /* Morph top bar → diagonal / */
+  .menu-btn--open .menu-btn__bar--top {
+    transform: translateY(7.75px) rotate(45deg);
+  }
+  /* Morph bot bar → diagonal \ */
+  .menu-btn--open .menu-btn__bar--bot {
+    transform: translateY(-7.75px) rotate(-45deg);
+  }
+  </style>
+  <body class="home-page">
+    <div class = "navigation-bar">
+        <a class="canvas-title" href="index.html">Not All Paths Are The Same</a>
+        <div class="button-menu">
+            <div id="top"></div>
+            <div id="bottom"></div>
+        </div>
+    </div>
+      <a class="sound"></a>
+      </div>
+  <!-- ══════════════════════════════════════════════
+       ABOUT OVERLAY — swipes down on menu click
+  ══════════════════════════════════════════════ -->
+ <div class="about" id="aboutOverlay">
+
+  <!-- TOP -->
+  <div class="about__topbar">
+    <span class="about__subtitle">UNDERSTAND DIFFERENT PATHS</span>
+  </div>
+
+  <!-- LEFT TITLE -->
+  <h1 class="about__heading">ABOUT</h1>
+
+  <!-- RIGHT -->
+  <div class="about__list">
+
+    <!-- ITEM 01 -->
+    <div class="accordion">
+
+      <button class="accordion__header">
+        <div class="accordion__left">
+          <span class="accordion__num">01</span>
+          <span class="accordion__title">The Project</span>
+        </div>
+         <img src="/assets/x.svg" class="accordion__icon" alt="">
+      </button>
+
+      <!-- LINE -->
+      <div class="accordion__divider"></div>
+
+      <!-- BODY -->
+      <div class="accordion__body">
+        <div class="accordion__inner">
+          <div class="accordion__content">
+
+            <p>
+              This project addresses Sustainable Development Goal (SDG) 10: Reduced Inequalities by exploring how unequal opportunity shapes people’s life paths and outcomes. Drawing on Malcolm Gladwell’s argument that “These are stories, instead, about people who were given a special opportunity to work really hard… Their success was not just of their own making. It was a product of the world in which they grew up,” the project challenges the idea that success is determined solely by individual effort.
+            </p>
+
+            <p>
+              Using generative art developed with p5.js and JavaScript, the project transforms inequality of opportunity into an interactive system. By visualizing how different starting points and surrounding conditions shape unequal paths, it encourages viewers to recognize that success is not equally accessible to everyone. In doing so, the work aims to foster empathy and awareness of how opportunity is distributed unevenly across society.
+            </p>
+
+            <p>
+              Quote: “These are stories, instead, about people who were given a special opportunity to work really hard and seized it, and who happened to come of age at a time when that extraordinary effort was rewarded by the rest of society. Their success was not just of their own making. It was a product of the world in which they grew up.”
+            </p>
+
+            <p>Author: Malcolm Gladwell</p>
+            <p>Publication: Outliers - The Story of Success</p>
+
+            <p>
+              Michael J. Sandel’s statement highlights how outcomes are shaped not only by individual effort, but also by the conditions people are given — particularly the starting points and environments that shape their access to opportunity.
+            </p>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ITEM 02 -->
+    <div class="accordion">
+
+      <button class="accordion__header">
+        <div class="accordion__left">
+          <span class="accordion__num">02</span>
+          <span class="accordion__title">Our Team</span>
+        </div>
+         <img src="/assets/x.svg" class="accordion__icon" alt="">
+      </button>
+
+      <!-- LINE -->
+      <div class="accordion__divider"></div>
+
+      <!-- BODY -->
+      <div class="accordion__body">
+        <div class="accordion__inner">
+          <div class="accordion__content">
+
+            <p>Group name: Duolingo</p>
+
+            <p>
+              Le Tran Thanh Tu - s40888575<br>
+              Nguyen Quynh Huong - s4051864
+            </p>
+
+            <p>
+              School of Communication and Design,<br>
+              RMIT University, Ho Chi Minh City, Vietnam
+            </p>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+    <script src="sketch.js"></script>
+    <script src="sound.js"></script>
+    
+    
+  </body>
+</html>

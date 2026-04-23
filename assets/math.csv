@@ -1,0 +1,8 @@
+country,bottom_quarter_mean_score,second_quarter_mean_score,third_quarter_mean_score,top_quarter_mean_score,estimated_performance_constant,message,change_10th_percentile_score_per_unit_index,change_90th_percentile_score_per_unit_index
+Cambodia,301,317,330,357,186,A higher starting point in family resources is linked to a higher score destination.,23,36
+Ecuador,335,362,393,423,-70,"In Ecuador, where a student starts matters a lot — the distance between low and high family resources is especially wide.",39,44
+Guatemala,300,323,342,377,101,"The path upward is clear in Guatemala: more family resources, higher average performance.",29,37
+Honduras,313,330,349,386,141,"Students in Honduras do not begin from the same place, and their scores reflect that difference.",21,38
+Paraguay,290,321,339,364,64,Paraguay highlights how unequal starting points can lead to unequal academic outcomes.,32,36
+Senegal,300,297,299,325,381,"In Senegal, the pathway is less steep, but differences in family resources still shape performance.",6,13
+Zambia,241,254,255,289,277,"Zambia shows that even when the gap is not the widest, starting conditions still influence where students end up.",3,24
